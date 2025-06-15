@@ -60,12 +60,16 @@ void AfarmCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AfarmCharacter::LookInput);
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AfarmCharacter::LookInput);
+
+		
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AfarmCharacter::Interact);
 	}
 	else
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component!"), *GetNameSafe(this));
 	}
 }
+
 
 void AfarmCharacter::Tick(float DeltaTime)
 {
@@ -92,6 +96,7 @@ void AfarmCharacter::TraceForInteractables()
 	{
 		if (HitActor != CurrentlyFocusedActor)
 		{
+			// If we were already looking at something else, unfocus and remove old UI
 			if (CurrentlyFocusedActor)
 			{
 				CurrentlyFocusedActor->OnUnfocused();
@@ -102,8 +107,16 @@ void AfarmCharacter::TraceForInteractables()
 					InteractPromptInstance->RemoveFromParent();
 					InteractPromptInstance = nullptr;
 				}
+
+				// 🔴 Hide old response
+				if (ResponseWidgetInstance)
+				{
+					ResponseWidgetInstance->RemoveFromParent();
+					ResponseWidgetInstance = nullptr;
+				}
 			}
 
+			// Focus new actor
 			HitActor->OnFocused();
 			CurrentlyFocusedActor = HitActor;
 
@@ -132,9 +145,17 @@ void AfarmCharacter::TraceForInteractables()
 				InteractPromptInstance->RemoveFromParent();
 				InteractPromptInstance = nullptr;
 			}
+
+			// 🔴 Remove the response from screen
+			if (ResponseWidgetInstance)
+			{
+				ResponseWidgetInstance->RemoveFromParent();
+				ResponseWidgetInstance = nullptr;
+			}
 		}
 	}
 }
+
 
 
 

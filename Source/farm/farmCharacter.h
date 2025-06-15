@@ -97,8 +97,19 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> InteractPromptClass;
 
-	// The actual widget instance shown on screen
+	// The class type of the response widget shown when E is pressed
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UUserWidget> ResponseWidgetClass;
+
+	// The actual prompt instance on screen
 	UUserWidget* InteractPromptInstance;
+
+	// The actual response widget instance on screen
+	UUserWidget* ResponseWidgetInstance;
+
+	void Interact();
+
+
 
 
 public:
